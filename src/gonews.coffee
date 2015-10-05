@@ -25,8 +25,9 @@ module.exports = (robot) ->
       console.log err if err
       console.log rss
 
-      for feed in rss[0]
-        res.reply feed
+      #for feed in rss[0]
+      res.reply rss[0].title
+      res.reply rss[0].description
 
   #robot.respond /hello/, (res) ->
   #  res.reply "hello!"
