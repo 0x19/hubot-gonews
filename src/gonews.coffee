@@ -14,9 +14,18 @@
 # Author:
 #   0x19 <nevio.vesic@gmail.com>
 
-module.exports = (robot) ->
-  robot.respond /hello/, (res) ->
-    res.reply "hello!"
+parser = require 'parse-rss'
 
-  robot.hear /orly/, ->
-    res.send "yarly"
+module.exports = (robot) ->
+
+  robot.respond /gonews/, (res) ->
+    url    = "http://golangweekly.com/rss/1b1gb6c4.rss"
+
+    parser url, (err,rss)->
+      console.log err if err
+      console.log rss
+
+      res.reply rss
+
+  #robot.respond /hello/, (res) ->
+  #  res.reply "hello!"

@@ -12,8 +12,5 @@ describe 'gonews', ->
 
     require('../src/gonews')(@robot)
 
-  it 'registers a respond listener', ->
-    expect(@robot.respond).to.have.been.calledWith(/hello/)
-
-  it 'registers a hear listener', ->
-    expect(@robot.hear).to.have.been.calledWith(/orly/)
+  it 'registers can access gonews', ->
+    expect(@robot.hear).to.have.been.calledWith(/gonews/)
