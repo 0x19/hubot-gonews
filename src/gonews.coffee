@@ -15,6 +15,7 @@
 #   0x19 <nevio.vesic@gmail.com>
 
 parser = require 'parse-rss'
+HtmlParser = require "htmlparser"
 
 module.exports = (robot) ->
 
@@ -25,9 +26,14 @@ module.exports = (robot) ->
       console.log err if err
       console.log rss
 
+      handler = new HTMLParser.DefaultHandler((() ->),
+        ignoreWhitespace: true
+      )
+      parser  = new HTMLParser.Parser handler
+      parser.parseComplete rss[0].description
+
       #for feed in rss[0]
-      res.reply rss[0].title
-      res.reply rss[0].description
+      res.reply handler.dom
 
   #robot.respond /hello/, (res) ->
   #  res.reply "hello!"
