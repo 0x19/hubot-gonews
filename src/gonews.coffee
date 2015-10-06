@@ -1,39 +1,45 @@
 # Description
-#   Hubot golang news extension
+#   Hubot golang news pulled from reddit
 #
 # Configuration:
-#   LIST_OF_ENV_VARS_TO_SET
+#   GONEWS_RSS_FEED_URL
 #
 # Commands:
-#   hubot hello - <what the respond trigger does>
-#   orly - <what the hear trigger does>
+#   gonews latest [\d+] - returns list of latest golang news. Default 5 items per response...
 #
 # Notes:
-#   <optional notes required for the script>
+#   GONEWS_RSS_FEED_URL is not needed. It will fall back to reddit/r/golang
 #
 # Author:
-#   0x19 <nevio.vesic@gmail.com>
+#   Nevio Vesic (0x19) <nevio.vesic@gmail.com>
 
 parser = require 'parse-rss'
-HtmlParser = require "htmlparser"
+
+reddit_url = process.env.GONEWS_RSS_FEED_URL || "https://www.reddit.com/r/golang/.rss"
 
 module.exports = (robot) ->
 
-  robot.respond /gonews/, (res) ->
-    url    = "http://golangweekly.com/rss/1b1gb6c4.rss"
+  robot.respond /gonews help/i, (msg) ->
+    cmds = robot.helpCommands()
+    cmds = (cmd for cmd in cmds when cmd.match(/(gonews)/))
+    msg.send cmds.join("\n")
 
-    parser url, (err,rss)->
-      console.log err if err
-      console.log rss
+  robot.respond /gonews latest ?(\d+)?/i, (msg) ->
+    random = Math.floor(Math.random() * (2000000 - 1000000) + 1000000)
+    count  = msg.match[1] || 5
 
-      handler = new HTMLParser.DefaultHandler((() ->),
-        ignoreWhitespace: true
-      )
-      parser  = new HTMLParser.Parser handler
-      parser.parseComplete rss[0].description
+    robot.logger.info "Fetching latest #{count} rss feed messages"
+    robot.logger.info "#{reddit_url}?time=#{random}"
 
-      #for feed in rss[0]
-      res.reply handler.dom
+    parser "#{reddit_url}?time=#{random}", (err,rss)->
+      if err
+        msg.send "Error happen while fetching golang news: #{err}"
+        return
 
-  #robot.respond /hello/, (res) ->
-  #  res.reply "hello!"
+      for feed in rss[0..count]
+        robot.emit 'slack.attachment',
+          message: msg.message
+          content:
+            title: feed.title,
+            title_link: feed.link
+            text: feed.description
