@@ -1,7 +1,7 @@
 {
   "name": "hubot-gonews",
   "description": "Hubot golang news extension",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "0x19 <nevio.vesic@gmail.com>",
   "license": "MIT",
 
